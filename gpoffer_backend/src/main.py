@@ -11,6 +11,8 @@ from src.routes.offer import offer_bp
 from src.routes.auth import auth_bp
 from src.routes.kyc import kyc_bp
 from src.routes.admin import admin_bp
+from src.routes.order import order_bp
+from src.routes.wallet import wallet_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
@@ -24,6 +26,8 @@ app.register_blueprint(offer_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(kyc_bp, url_prefix='/api')
 app.register_blueprint(admin_bp, url_prefix='/api')
+app.register_blueprint(order_bp, url_prefix='/api')
+app.register_blueprint(wallet_bp, url_prefix='/api')
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
@@ -32,6 +36,7 @@ db.init_app(app)
 
 # Import all models to ensure they are registered
 from src.models.offer import Offer, OfferParticipant
+from src.models.order import Order, Complaint, PaymentDetails, WalletTransaction
 
 with app.app_context():
     db.create_all()

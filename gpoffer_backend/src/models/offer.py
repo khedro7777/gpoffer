@@ -9,6 +9,7 @@ class Offer(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
     product_service = db.Column(db.String(100), nullable=False)
     target_region = db.Column(db.String(50), nullable=False)
     base_price = db.Column(db.Float, nullable=False)
@@ -22,6 +23,21 @@ class Offer(db.Model):
     supplier_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     status = db.Column(db.String(20), default='Pending')  # Pending, Active, Cancelled, Expired
     current_participants = db.Column(db.Integer, default=0)
+    
+    # New fields for enhanced functionality
+    images = db.Column(db.Text)  # JSON array of image paths
+    category = db.Column(db.String(100))
+    tags = db.Column(db.Text)  # JSON array of tags
+    featured = db.Column(db.Boolean, default=False)
+    
+    # Payment method for this offer
+    payment_methods = db.Column(db.Text)  # JSON array: ["paypal", "crypto", "cash_on_delivery"]
+    
+    # Seller payment details for this specific offer
+    paypal_client_id = db.Column(db.String(255))
+    crypto_wallet_address = db.Column(db.String(255))
+    crypto_type = db.Column(db.String(20))
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -33,6 +49,7 @@ class Offer(db.Model):
         return {
             'id': self.id,
             'title': self.title,
+            'description': self.description,
             'product_service': self.product_service,
             'target_region': self.target_region,
             'base_price': self.base_price,
@@ -46,6 +63,14 @@ class Offer(db.Model):
             'supplier_id': self.supplier_id,
             'status': self.status,
             'current_participants': self.current_participants,
+            'images': json.loads(self.images) if self.images else [],
+            'category': self.category,
+            'tags': json.loads(self.tags) if self.tags else [],
+            'featured': self.featured,
+            'payment_methods': json.loads(self.payment_methods) if self.payment_methods else [],
+            'paypal_client_id': self.paypal_client_id,
+            'crypto_wallet_address': self.crypto_wallet_address,
+            'crypto_type': self.crypto_type,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

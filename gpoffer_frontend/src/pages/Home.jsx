@@ -1,13 +1,39 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { OfferCard } from '@/components/ui/offer-card'
-import { Search, Filter, TrendingUp, Users, ShoppingBag } from 'lucide-react'
+import { Search, Filter, TrendingUp, Users, ShoppingBag, MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Download } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
 export function Home() {
   const [offers, setOffers] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [showInstallButton, setShowInstallButton] = useState(false)
+
+  // PWA Install functionality
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setShowInstallButton(true)
+    }
+
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return
+
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null)
+      setShowInstallButton(false)
+    }
+  }
 
   // Mock data for demonstration
   useEffect(() => {
@@ -79,6 +105,16 @@ export function Home() {
               <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-blue-600">
                 Become a Supplier
               </Button>
+              {showInstallButton && (
+                <Button 
+                  onClick={handleInstallClick}
+                  size="lg" 
+                  className="bg-green-500 hover:bg-green-600 text-white"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Install App
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -177,6 +213,79 @@ export function Home() {
           </Button>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Company Info */}
+            <div>
+              <h3 className="text-xl font-bold mb-4">GPOFFER HUB</h3>
+              <p className="text-gray-300 mb-4">
+                The leading platform for group purchasing, connecting buyers and sellers worldwide.
+              </p>
+              <div className="flex space-x-4">
+                <Facebook className="h-5 w-5 text-gray-300 hover:text-white cursor-pointer transition-colors" />
+                <Twitter className="h-5 w-5 text-gray-300 hover:text-white cursor-pointer transition-colors" />
+                <Instagram className="h-5 w-5 text-gray-300 hover:text-white cursor-pointer transition-colors" />
+                <Linkedin className="h-5 w-5 text-gray-300 hover:text-white cursor-pointer transition-colors" />
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li><a href="/about" className="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                <li><a href="/how-it-works" className="text-gray-300 hover:text-white transition-colors">How It Works</a></li>
+                <li><a href="/offers" className="text-gray-300 hover:text-white transition-colors">Browse Offers</a></li>
+                <li><a href="/supplier" className="text-gray-300 hover:text-white transition-colors">Become a Supplier</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2">
+                <li><a href="/terms" className="text-gray-300 hover:text-white transition-colors">Terms of Sale</a></li>
+                <li><a href="/privacy" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="/support" className="text-gray-300 hover:text-white transition-colors">Support</a></li>
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span className="text-gray-300">+1 (555) 123-4567</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span className="text-gray-300">info@gpofferhub.com</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span className="text-gray-300">123 Business St, City, Country</span>
+                </div>
+              </div>
+              
+              {/* Google Map Placeholder */}
+              <div className="mt-4 bg-gray-700 h-32 rounded-lg flex items-center justify-center">
+                <span className="text-gray-400">Google Map Location</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
+            <p className="text-gray-300">
+              © 2025 GPOFFER HUB. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
