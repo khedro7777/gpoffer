@@ -1,0 +1,2 @@
+// Offer Model content here
+
